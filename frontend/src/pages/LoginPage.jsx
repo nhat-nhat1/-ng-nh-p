@@ -19,9 +19,30 @@ export default function LoginPage() {
       navigate('/');
     } catch (err) {
       const message = err.response?.data?.message || 'Có lỗi xảy ra';
-      toast.error(message);
-      if (err.response?.status === 403 && err.response?.data?.redirect) {
+      const status = err.response?.status;
+      
+      // Determine error type for error page
+      let errorType = 'general';
+      if (status === 401) {
+        errorType = 'invalid_credentials';
+      } else if (status === 403 && err.response?.data?.redirect) {
         navigate('/verify-otp', { state: { email } });
+        return;
+      } else if (status === 500) {
+        errorType = 'server_error';
+      }
+      
+      // Show toast for minor errors, redirect to error page for major ones
+      if (errorType === 'invalid_credentials' || errorType === 'server_error') {
+        navigate('/login-error', { 
+          state: { 
+            errorType, 
+            errorMessage: message, 
+            email 
+          } 
+        });
+      } else {
+        toast.error(message);
       }
     } finally {
       setLoading(false);

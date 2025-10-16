@@ -18,7 +18,37 @@ export default function RegisterPage() {
       toast.success(data.message || 'Đăng ký thành công');
       navigate('/verify-otp', { state: { email: form.email } });
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Có lỗi xảy ra');
+      const message = err.response?.data?.message || 'Có lỗi xảy ra';
+      const status = err.response?.status;
+      
+      // Determine error type for error page
+      let errorType = 'general';
+      if (message.includes('Email đã tồn tại')) {
+        errorType = 'email_exists';
+      } else if (message.includes('Email không hợp lệ')) {
+        errorType = 'invalid_email';
+      } else if (message.includes('Mật khẩu phải có ít nhất 8 ký tự')) {
+        errorType = 'weak_password';
+      } else if (message.includes('Mật khẩu xác nhận không khớp')) {
+        errorType = 'password_mismatch';
+      } else if (message.includes('Vui lòng điền đầy đủ thông tin')) {
+        errorType = 'missing_fields';
+      } else if (status === 500) {
+        errorType = 'server_error';
+      }
+      
+      // Redirect to error page for major errors, show toast for minor ones
+      if (['email_exists', 'invalid_email', 'weak_password', 'password_mismatch', 'missing_fields', 'server_error'].includes(errorType)) {
+        navigate('/register-error', { 
+          state: { 
+            errorType, 
+            errorMessage: message, 
+            formData: form 
+          } 
+        });
+      } else {
+        toast.error(message);
+      }
     } finally {
       setLoading(false);
     }
