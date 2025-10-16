@@ -6,6 +6,8 @@ import VerifyOtpPage from './pages/VerifyOtpPage';
 import LoginPage from './pages/LoginPage';
 import ForgotPasswordPage from './pages/ForgotPasswordPage';
 import ResetPasswordPage from './pages/ResetPasswordPage';
+import LoginErrorPage from './pages/LoginErrorPage';
+import RegisterErrorPage from './pages/RegisterErrorPage';
 
 function Navbar() {
   return (
@@ -29,8 +31,10 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/register" />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/register-error" element={<RegisterErrorPage />} />
           <Route path="/verify-otp" element={<VerifyOtpPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/login-error" element={<LoginErrorPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/reset/:token" element={<ResetPasswordPage />} />
         </Routes>
